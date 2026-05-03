@@ -1,1 +1,151 @@
+bash
 
+cat > /mnt/user-data/outputs/index.html << 'HTMLEOF'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>RecoAgent — AI Movie & Book Recommendations</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#0f0f1a;color:#e8e8f0;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:2rem 1rem}
+.wrap{max-width:700px;width:100%}
+.hdr{display:flex;align-items:center;gap:16px;margin-bottom:2rem}
+.logo{width:52px;height:52px;background:linear-gradient(135deg,#3C3489,#7F77DD);border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo svg{width:28px;height:28px}
+.ttl{font-family:'Playfair Display',serif;font-size:26px;font-weight:600;color:#fff}
+.sub{font-size:12px;color:#888;margin-top:3px;letter-spacing:0.03em}
+.card{background:#1a1a2e;border:1px solid #2a2a45;border-radius:16px;padding:1.5rem;margin-bottom:1rem}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1rem}
+.grp label{display:block;font-size:11px;font-weight:500;color:#888;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:8px}
+select{width:100%;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:13px;border:1px solid #2a2a45;border-radius:10px;background:#0f0f1a;color:#e8e8f0;outline:none;cursor:pointer}
+select:focus{border-color:#7F77DD}
+.full{grid-column:1/-1}
+.row{display:flex;gap:10px}
+.row input{flex:1;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:13px;border:1px solid #2a2a45;border-radius:10px;background:#0f0f1a;color:#e8e8f0;outline:none}
+.row input:focus{border-color:#7F77DD}
+.row input::placeholder{color:#555}
+.btn{padding:10px 22px;background:linear-gradient(135deg,#3C3489,#7F77DD);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;transition:opacity 0.2s}
+.btn:hover{opacity:0.88}
+.rec{background:#0f0f1a;border:1px solid #2a2a45;border-radius:12px;padding:1.1rem 1.3rem;margin-bottom:10px;animation:up 0.3s ease both}
+@keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.rtop{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:5px}
+.rtitle{font-family:'Playfair Display',serif;font-size:17px;font-weight:600;color:#fff}
+.badge{font-size:10px;font-weight:600;padding:3px 11px;border-radius:20px;background:#EEEDFE;color:#3C3489;flex-shrink:0;letter-spacing:0.04em}
+.badge.book{background:#E1F5EE;color:#085041}
+.rmeta{font-size:12px;color:#666;margin-bottom:7px}
+.rwhy{font-size:13px;color:#aaa;line-height:1.65;border-top:1px solid #2a2a45;padding-top:9px;margin-top:7px}
+.rwhy strong{color:#e8e8f0;font-weight:500}
+.hint{font-size:13px;color:#666;text-align:center;padding:1.5rem 0;line-height:1.7}
+.note{font-size:11px;color:#555;text-align:center;padding:1rem 0;line-height:1.6;border-top:1px solid #1a1a2e;margin-top:0.5rem}
+.chip-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1.2rem}
+.chip{padding:6px 14px;border:1px solid #2a2a45;border-radius:20px;font-size:12px;color:#aaa;cursor:pointer;transition:all 0.15s;background:transparent}
+.chip:hover,.chip.active{background:#3C3489;border-color:#7F77DD;color:#fff}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hdr">
+    <div class="logo">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V7L12 2z" fill="#fff" opacity="0.25"/>
+        <path d="M8 12l2.5 2.5L16 9" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div>
+      <div class="ttl">RecoAgent</div>
+      <div class="sub">AI-powered movie &amp; book recommendations · synthetic data demo</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="grid">
+      <div class="grp">
+        <label>Content Type</label>
+        <select id="type-sel">
+          <option value="both">Movies &amp; Books</option>
+          <option value="movie">Movies only</option>
+          <option value="book">Books only</option>
+        </select>
+      </div>
+      <div class="grp">
+        <label>Genre</label>
+        <select id="genre-sel">
+          <option value="">Any genre</option>
+          <option value="sci-fi">Sci-Fi</option>
+          <option value="thriller">Thriller</option>
+          <option value="romance">Romance</option>
+          <option value="fantasy">Fantasy</option>
+          <option value="horror">Horror</option>
+          <option value="comedy">Comedy</option>
+          <option value="mystery">Mystery</option>
+          <option value="drama">Drama</option>
+        </select>
+      </div>
+      <div class="grp full">
+        <label>What are you in the mood for?</label>
+        <div class="row">
+          <input type="text" id="mood" placeholder='e.g. "mind-bending thriller" or "cozy mystery"'/>
+          <button class="btn" onclick="go()">Recommend ↗</button>
+        </div>
+      </div>
+    </div>
+    <div class="chip-row" id="chips">
+      <span class="chip" onclick="quickPick('something like Inception')">Like Inception</span>
+      <span class="chip" onclick="quickPick('cozy mystery I can finish in one sitting')">Cozy mystery</span>
+      <span class="chip" onclick="quickPick('heartwarming and emotional')">Heartwarming</span>
+      <span class="chip" onclick="quickPick('dark and psychological')">Dark &amp; psychological</span>
+      <span class="chip" onclick="quickPick('funny and lighthearted')">Funny &amp; light</span>
+      <span class="chip" onclick="quickPick('epic adventure')">Epic adventure</span>
+    </div>
+  </div>
+
+  <div id="results"><div class="hint">Pick your preferences above and hit <strong style="color:#e8e8f0">Recommend ↗</strong><br>or tap a quick-pick chip to get started.</div></div>
+  <div class="note">All recommendations are AI-designed using synthetic catalog data · no PII collected or stored<br>Built for Database Management Lab 3 — Option 2: AI Agents for Beginners</div>
+</div>
+
+<script>
+const CATALOG={movie:{"sci-fi":[{title:"Inception",year:2010,why:"A mind-bending sci-fi thriller about dreams within dreams — perfect if you love layered storytelling.",fact:"Shot in 6 countries across 4 continents."},{title:"Arrival",year:2016,why:"A cerebral sci-fi about a linguist decoding alien language — slow-burn but deeply emotional.",fact:"Based on the short story 'Story of Your Life'."},{title:"Interstellar",year:2014,why:"Epic sci-fi about space, time, and a father's love — visually stunning and emotionally resonant.",fact:"Real astrophysicist Kip Thorne co-wrote the script."},{title:"Ex Machina",year:2014,why:"A tense AI thriller set in an isolated lab — raises big questions about consciousness.",fact:"The robot's movements were done by a real dancer."},{title:"The Martian",year:2015,why:"A feel-good survival story on Mars — funny, smart, and surprisingly uplifting.",fact:"NASA consulted on the science throughout production."}],thriller:[{title:"Gone Girl",year:2014,why:"A psychological thriller with jaw-dropping twists — you won't see the ending coming.",fact:"The author also wrote the screenplay adaptation."},{title:"Parasite",year:2019,why:"A masterclass in tension and social commentary — genre-bending and unforgettable.",fact:"First non-English film to win Best Picture at the Oscars."},{title:"Knives Out",year:2019,why:"A clever whodunit with a stellar ensemble cast — witty and endlessly entertaining.",fact:"Director Rian Johnson wrote it inspired by Agatha Christie."},{title:"Se7en",year:1995,why:"A dark, gritty detective thriller with one of cinema's most shocking endings.",fact:"Brad Pitt's hand injury in the film was kept in the script."},{title:"Prisoners",year:2013,why:"A gut-wrenching mystery about desperate parents and a missing child — relentlessly tense.",fact:"The film was shot in only 43 days."}],romance:[{title:"La La Land",year:2016,why:"A beautiful musical romance about chasing dreams in Los Angeles — bittersweet and gorgeous.",fact:"Ryan Gosling learned piano from scratch for the role."},{title:"Pride & Prejudice",year:2005,why:"A timeless, sweeping romance — Keira Knightley's best performance.",fact:"The famous lake scene was added at the last minute."},{title:"Call Me By Your Name",year:2017,why:"A tender summer romance set in Italy — lush, sensory, and emotionally devastating.",fact:"The peach scene became one of cinema's most iconic moments."},{title:"About Time",year:2013,why:"A heartwarming time-travel romance about appreciating everyday life.",fact:"Richard Curtis wrote it inspired by his own father."},{title:"Crazy Rich Asians",year:2018,why:"A fun, glamorous romantic comedy with stunning visuals and a great cast.",fact:"First Hollywood film with an all-Asian cast since 1993."}],fantasy:[{title:"The Shape of Water",year:2017,why:"A gorgeous, dreamlike fantasy romance — unlike anything you've seen before.",fact:"Guillermo del Toro designed the creature suit himself."},{title:"Pan's Labyrinth",year:2006,why:"A dark, visually stunning Spanish fantasy — haunting and unforgettable.",fact:"Del Toro wrote the screenplay in only 5 days."},{title:"Everything Everywhere All at Once",year:2022,why:"A wild multiverse adventure full of heart, humor, and absurdity.",fact:"Won 7 Academy Awards including Best Picture."},{title:"The Princess Bride",year:1987,why:"A beloved classic — funny, romantic, and endlessly quotable.",fact:"Cary Elwes really broke his toe during filming."},{title:"Stardust",year:2007,why:"A charming fairy-tale adventure with wit and romance — underrated gem.",fact:"Robert De Niro plays a sky pirate who loves to dance."}],horror:[{title:"Get Out",year:2017,why:"A sharp, terrifying social horror film — one of the smartest of the decade.",fact:"Jordan Peele initially thought it was unfilmable."},{title:"Hereditary",year:2018,why:"A deeply unsettling family horror — slow-burn dread that pays off horrifically.",fact:"The infamous car scene was one continuous take."},{title:"A Quiet Place",year:2018,why:"A tense creature horror where silence is survival — incredibly inventive premise.",fact:"John Krasinski wrote, directed, and starred in the film."},{title:"The Witch",year:2015,why:"A moody, atmospheric colonial-era horror — deeply unsettling and historically grounded.",fact:"The dialogue was taken from real 17th-century sources."},{title:"Midsommar",year:2019,why:"A uniquely terrifying horror set in a Swedish folk festival in broad daylight.",fact:"The director drew inspiration from his own breakup."}],comedy:[{title:"The Grand Budapest Hotel",year:2014,why:"A whimsical, visually inventive comedy caper — Wes Anderson at his most delightful.",fact:"Ralph Fiennes improvised many of his best lines."},{title:"Game Night",year:2018,why:"A hilarious meta-comedy that plays with movie conventions brilliantly.",fact:"The directors used real board game mechanics as plot devices."},{title:"What We Do in the Shadows",year:2014,why:"A mockumentary about vampire flatmates — endlessly quotable and absurd.",fact:"Most of the film was improvised by the cast."},{title:"The Nice Guys",year:2016,why:"A funny, stylish 70s buddy-cop comedy — Ryan Gosling's most underrated performance.",fact:"Shane Black wrote the script over 10 years."},{title:"Superbad",year:2007,why:"A sharp, hilarious coming-of-age comedy — embarrassingly relatable.",fact:"Seth Rogen and Evan Goldberg wrote it when they were 13."}],mystery:[{title:"Zodiac",year:2007,why:"A gripping, obsessive mystery based on the real Zodiac killer case.",fact:"David Fincher insisted on historically accurate props and costumes."},{title:"The Girl with the Dragon Tattoo",year:2011,why:"A dark, stylish mystery with an iconic female protagonist.",fact:"Rooney Mara lost 10 pounds and learned to hack for the role."},{title:"Murder on the Orient Express",year:2017,why:"An elegant, old-fashioned whodunit with a stellar all-star cast.",fact:"Kenneth Branagh grew his real mustache for 6 months."},{title:"Brick",year:2005,why:"A neo-noir high-school mystery — uniquely stylized and surprisingly gripping.",fact:"Joseph Gordon-Levitt had a split lip for most of the shoot."},{title:"The Prestige",year:2006,why:"A dazzling mystery about rival magicians — one of Nolan's best.",fact:"The film's structure mirrors the three stages of a magic trick."}],drama:[{title:"Whiplash",year:2014,why:"An electrifying drama about obsession and musical perfection — impossibly tense.",fact:"J.K. Simmons practiced drumming 4 hours daily for the role."},{title:"12 Years a Slave",year:2013,why:"A devastating, essential historical drama — powerful and unflinching.",fact:"Steve McQueen shot it in 35 days with a mostly unknown cast."},{title:"Manchester by the Sea",year:2016,why:"A quiet, devastating drama about grief and guilt — Casey Affleck is extraordinary.",fact:"It was shot on location with real Massachusetts locals as extras."},{title:"The Shawshank Redemption",year:1994,why:"The ultimate feel-good prison drama — friendship, hope, and resilience.",fact:"It was a box office flop but became the most-rated film on IMDb."},{title:"Moonlight",year:2016,why:"A tender, lyrical drama about identity and love — beautifully filmed.",fact:"The three actors playing Chiron never met each other."}]},book:{"sci-fi":[{title:"Project Hail Mary",year:2021,why:"A thrilling, optimistic sci-fi about a lone astronaut saving Earth — unputdownable.",fact:"Andy Weir wrote it while also writing 'The Martian'."},{title:"Dune",year:1965,why:"The foundational sci-fi epic — rich world-building, politics, and prophecy.",fact:"It was rejected by 23 publishers before being accepted."},{title:"The Hitchhiker's Guide to the Galaxy",year:1979,why:"A hilarious, absurdist romp through space — perfect for casual reading.",fact:"It started as a BBC radio comedy before becoming a novel."},{title:"Ender's Game",year:1985,why:"A gripping military sci-fi about child prodigies training for alien war.",fact:"Originally written as a novella to frame 'Speaker for the Dead'."},{title:"Station Eleven",year:2014,why:"A haunting post-pandemic novel about art, memory, and survival.",fact:"Emily St. John Mandel finished it just before a real pandemic scare."}],thriller:[{title:"Gone Girl",year:2012,why:"A twisty psychological thriller told from dueling unreliable narrators.",fact:"Gillian Flynn wrote it in 9 months while working full-time."},{title:"The Girl on the Train",year:2015,why:"A gripping mystery about obsession and unreliable memory.",fact:"Paula Hawkins got the idea from her daily commute."},{title:"The Silent Patient",year:2019,why:"A compulsive psychological thriller with a stunning final twist.",fact:"Alex Michaelides wrote it over 7 years while working in film."},{title:"I Am Pilgrim",year:2013,why:"A globe-trotting spy thriller with intricate plotting and high stakes.",fact:"Terry Hayes spent 10 years researching and writing it."},{title:"The Girl with the Dragon Tattoo",year:2005,why:"A dark Scandinavian thriller with one of literature's most iconic heroines.",fact:"Stieg Larsson submitted all three manuscripts before dying."}],romance:[{title:"The Hating Game",year:2016,why:"A sharp, witty enemies-to-lovers office romance — impossible to put down.",fact:"Sally Thorne originally published it on an online writing forum."},{title:"It Ends with Us",year:2016,why:"A powerful, emotional romance dealing with love and difficult choices.",fact:"Colleen Hoover based it loosely on her own mother's story."},{title:"Beach Read",year:2020,why:"A charming romance between a romance writer and a literary fiction writer.",fact:"Emily Henry wrote it while working as a children's book editor."},{title:"Pride and Prejudice",year:1813,why:"The original enemies-to-lovers romance — witty, timeless, and deeply satisfying.",fact:"Jane Austen sold the rights for just £110."},{title:"The Kiss Quotient",year:2018,why:"A sweet, modern romance with a neurodivergent protagonist — warm and funny.",fact:"Helen Hoang wrote it while being evaluated for autism herself."}],fantasy:[{title:"The Name of the Wind",year:2007,why:"A beautifully written epic fantasy about a legendary hero telling his own story.",fact:"Patrick Rothfuss spent 14 years writing it before publishing."},{title:"The Way of Kings",year:2010,why:"A massive, intricate fantasy epic — one of the most ambitious worlds in fiction.",fact:"Brandon Sanderson has a full cosmology connecting all his fantasy worlds."},{title:"Piranesi",year:2020,why:"A quietly magical mystery set in a surreal infinite house — unlike anything else.",fact:"Susanna Clarke was ill for a decade while writing it."},{title:"The Night Circus",year:2011,why:"An enchanting, atmospheric story of rival magicians and a mysterious circus.",fact:"Erin Morgenstern wrote the first draft during NaNoWriMo."},{title:"Jonathan Strange & Mr Norrell",year:2004,why:"A dense, witty alternate-history novel about English magicians — deeply original.",fact:"Susanna Clarke spent 10 years writing this novel."}],horror:[{title:"The Haunting of Hill House",year:1959,why:"The gold standard of psychological horror — genuinely unsettling prose.",fact:"Stephen King called it one of the greatest horror novels ever written."},{title:"Mexican Gothic",year:2020,why:"A lush gothic horror set in 1950s Mexico — atmospheric and deeply creepy.",fact:"Silvia Moreno-Garcia drew on Lovecraft while subverting his racism."},{title:"House of Leaves",year:2000,why:"An experimental horror novel that makes you question the book itself.",fact:"Mark Z. Danielewski spent 10 years developing its unique format."},{title:"Bird Box",year:2014,why:"A tense, claustrophobic horror — what if you couldn't open your eyes?",fact:"Josh Malerman wrote it before he knew how to properly format a novel."},{title:"The Troop",year:2014,why:"A stomach-churning creature horror set on an isolated island — viscerally terrifying.",fact:"Nick Cutter (Craig Davidson) is better known as a literary fiction author."}],comedy:[{title:"Good Omens",year:1990,why:"A hilarious buddy comedy about an angel and demon trying to stop the apocalypse.",fact:"Terry Pratchett and Neil Gaiman wrote it by fax machine."},{title:"Where'd You Go, Bernadette",year:2012,why:"A witty epistolary novel about a brilliant, chaotic architect who disappears.",fact:"Maria Semple was a writer on 'Arrested Development'."},{title:"The Rosie Project",year:2013,why:"An endearing, funny romance about an autistic professor hunting for a wife.",fact:"Graeme Simsion wrote it as a screenplay first."},{title:"Bossypants",year:2011,why:"Tina Fey's hilarious memoir — sharp, self-deprecating, and genuinely funny.",fact:"It spent 5 consecutive months on the New York Times bestseller list."},{title:"A Man Called Ove",year:2012,why:"A funny and deeply moving story about a grumpy man rediscovering life.",fact:"Fredrik Backman originally wrote it as a blog post."}],mystery:[{title:"And Then There Were None",year:1939,why:"Agatha Christie's masterpiece — the original locked-room mystery, endlessly tense.",fact:"It's the best-selling mystery novel of all time."},{title:"Big Little Lies",year:2014,why:"A sharp, twisty mystery about secrets in a wealthy school community.",fact:"Liane Moriarty wrote it while dealing with a difficult neighbor."},{title:"The Thursday Murder Club",year:2020,why:"A charming, witty cozy mystery featuring a club of elderly amateur sleuths.",fact:"Richard Osman wrote it during lockdown in just a few months."},{title:"In the Woods",year:2007,why:"A deeply atmospheric Irish mystery with a haunted detective — beautifully written.",fact:"Tana French wrote it as her debut novel after years of acting."},{title:"Presumed Innocent",year:1987,why:"A gripping legal thriller about a prosecutor accused of murdering his mistress.",fact:"Scott Turow wrote it entirely during his commute on the Chicago L."}],drama:[{title:"A Little Life",year:2015,why:"An emotionally devastating drama about trauma and friendship — profoundly moving.",fact:"Hanya Yanagihara wrote the first draft in 18 months."},{title:"The Kite Runner",year:2003,why:"A heartbreaking story of guilt, redemption, and Afghanistan across decades.",fact:"Khaled Hosseini wrote it while working full-time as a physician."},{title:"Normal People",year:2018,why:"An intimate, achingly real portrait of two young people in love — quietly brilliant.",fact:"Sally Rooney wrote it when she was just 26 years old."},{title:"The Great Alone",year:2018,why:"A sweeping survival story set in the Alaskan wilderness — raw and powerful.",fact:"Kristin Hannah spent years researching off-grid Alaskan life."},{title:"Pachinko",year:2017,why:"A multigenerational saga of a Korean family in Japan — epic and deeply human.",fact:"Min Jin Lee spent 30 years researching and writing it."}]}};
+
+function shuffle(a){return a.sort(()=>Math.random()-0.5)}
+function pickRandomGenre(){const g=Object.keys(CATALOG.movie);return g[Math.floor(Math.random()*g.length)]}
+function typeOf(p){for(const g of Object.keys(CATALOG.movie))if(CATALOG.movie[g].includes(p))return'movie';return'book'}
+
+function quickPick(text){
+  document.getElementById('mood').value=text;
+  go();
+}
+
+function go(){
+  const type=document.getElementById('type-sel').value;
+  const genre=document.getElementById('genre-sel').value||pickRandomGenre();
+  let picks=[];
+  if(type==='both'){
+    const g=genre||pickRandomGenre();
+    const m=shuffle([...(CATALOG.movie[g]||[])]);
+    const b=shuffle([...(CATALOG.book[g]||[])]);
+    picks=[m[0],m[1],b[0]].filter(Boolean);
+    if(picks.length<3&&b[1])picks.push(b[1]);
+  } else {
+    const src=CATALOG[type]||CATALOG.movie;
+    picks=shuffle([...(src[genre]||[])]).slice(0,3);
+  }
+  if(!picks.length){document.getElementById('results').innerHTML='<div class="hint">No results for that combo — try a different genre!</div>';return;}
+  document.getElementById('results').innerHTML=picks.map((p,i)=>{
+    const t=typeOf(p);
+    return`<div class="rec" style="animation-delay:${i*0.08}s">
+      <div class="rtop"><div class="rtitle">${p.title}</div><span class="badge ${t==='book'?'book':''}">${t==='book'?'BOOK':'MOVIE'}</span></div>
+      <div class="rmeta">${genre} · ${p.year}</div>
+      <div class="rwhy">${p.why}<br><strong>Fun fact:</strong> ${p.fact}</div>
+    </div>`;
+  }).join('');
+}
+
+document.getElementById('mood').addEventListener('keydown',e=>{if(e.key==='Enter')go()});
+</script>
+</body>
+</html>
+HTMLEOF
+echo "Done"
